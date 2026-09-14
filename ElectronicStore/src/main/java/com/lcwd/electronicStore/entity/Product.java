@@ -1,14 +1,16 @@
 package com.lcwd.electronicStore.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.logging.log4j.util.Lazy;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,7 +28,16 @@ public class Product {
     private double price;
     private double discountedPrice;
     private int quantity;
+    private Date addedDate;
     private boolean live;
     private boolean stock;
+    private String imageName;
+
+
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
 
 }

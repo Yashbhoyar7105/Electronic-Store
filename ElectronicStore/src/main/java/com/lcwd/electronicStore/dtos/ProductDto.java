@@ -1,5 +1,6 @@
 package com.lcwd.electronicStore.dtos;
 
+import com.lcwd.electronicStore.entity.Category;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -25,6 +28,10 @@ public class ProductDto {
     private double price;
     private double discountedPrice;
     private int quantity;
+    private Date addedDate;
     private boolean live;
     private boolean stock;
+    private String imageName;
+
+    private CategoryDto category;
 }
