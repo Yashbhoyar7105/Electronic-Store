@@ -19,12 +19,12 @@ import java.util.List;
 public class CartDto {
 
 
-    private String CartId;
+    private String cartId;
 
     private UserDto user;
     private Date createdDate;
 
-    private List<CartItemDto> cartItem= new ArrayList<>();
+    private List<CartItemDto> items = new ArrayList<>();
 
 
 }

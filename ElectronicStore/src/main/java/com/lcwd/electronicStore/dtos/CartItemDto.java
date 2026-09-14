@@ -14,7 +14,7 @@ import lombok.*;
 public class CartItemDto {
 
 
-    private String cartItemId;
+    private int cartItemId;
 
     private ProductDto product;
     private int quantity;

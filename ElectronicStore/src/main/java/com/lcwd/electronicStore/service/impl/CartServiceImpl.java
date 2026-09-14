@@ -34,8 +34,6 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private CartRepository cartRepository;
 
-    @Autowired
-    private AddItemToCartRequest request;
 
     @Autowired
     private CartItemRepository cartItemRepository;
@@ -58,7 +56,7 @@ public class CartServiceImpl implements CartService {
 
         Cart cart=null;
         try{
-            cart = cartRepository.findByUSer(user).get();
+            cart = cartRepository.findByUser(user).get();
 
         }catch (NoSuchElementException e){
            cart=new Cart();
@@ -67,27 +65,28 @@ public class CartServiceImpl implements CartService {
         }
 
 
-        AtomicReference<Boolean> updated=new AtomicReference<>(false);
+        boolean updated = false;
+
         List<CartItem> items = cart.getItems();
-        List<CartItem> updateditems = items.stream().map(item -> {
-            if (item.getProduct().getProductId().equalsIgnoreCase(productId)) {
+
+        for (CartItem item : items) {
+            if (item.getProduct().getProductId().equals(productId)) {
                 item.setQuantity(quantity);
-                item.setTotalPrice(quantity * product.getPrice());
-                updated.set(true);
+                item.setTotalPrice(quantity * product.getDiscountedPrice());
+                updated = true;
+                break;
             }
-            return item;
-        }).collect(Collectors.toList());
+        }
 
-        cart.setItems(updateditems);
-
-        if(!updated.get()){
-            CartItem cartitem = CartItem.builder()
+        if (!updated) {
+            CartItem cartItem = CartItem.builder()
                     .quantity(quantity)
-                    .totalPrice(quantity * product.getPrice())
-                    .product(product)
+                    .totalPrice(quantity * product.getDiscountedPrice())
                     .cart(cart)
+                    .product(product)
                     .build();
-            cart.getItems().add(cartitem);
+
+            cart.getItems().add(cartItem);
         }
 
         cart.setUser(user);
@@ -106,7 +105,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public void clearCart(String userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found with the given id!!"));
-        Cart cart = cartRepository.findByUSer(user).orElseThrow(() -> new ResourceNotFoundException("cart not found with the given id!!"));
+        Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("cart not found with the given id!!"));
         cart.getItems().clear();
         cartRepository.save(cart);
 
@@ -115,7 +114,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartDto getCartByUser(String userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user not found with the given id!!"));
-        Cart cart = cartRepository.findByUSer(user).orElseThrow(() -> new ResourceNotFoundException("cart not found with the given id!!"));
+        Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("cart not found with the given id!!"));
 
         return mapper.map(cart, CartDto.class);
     }

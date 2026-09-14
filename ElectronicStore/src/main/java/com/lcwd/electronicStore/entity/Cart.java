@@ -17,12 +17,12 @@ import java.util.List;
 public class Cart {
 
     @Id
-    private String CartId;
+    private String cartId;
     @OneToOne
     private User user;
     private Date createdDate;
 
-    @OneToMany( mappedBy = "cart",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany( mappedBy = "cart",cascade = CascadeType.ALL, fetch = FetchType.EAGER,orphanRemoval = true)
     private List<CartItem> items= new ArrayList<>();
 
 
