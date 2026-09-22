@@ -1,11 +1,16 @@
 package com.lcwd.electronicStore.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.lcwd.electronicStore.service.UserService;
+import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 @Getter
@@ -15,7 +20,7 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "User_table")
-public class User {
+public class User implements UserDetails {
 
     @Id
     private String userId;
@@ -23,7 +28,7 @@ public class User {
     private String name;
     @Column(name = "user_email", unique = true)
     private String email;
-    @Column(length = 10)
+    @Column(length = 100)
     private String password;
     private String gender;
     @Column(length = 1000)
@@ -31,5 +36,43 @@ public class User {
     @Column(name = "user_image_name")
     private String userImage;
 
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
+    private List<Order> orders=new ArrayList<>();
 
+
+    //must have implemented
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
+
+    @Override
+    public String getPassword(){
+        return this.password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
