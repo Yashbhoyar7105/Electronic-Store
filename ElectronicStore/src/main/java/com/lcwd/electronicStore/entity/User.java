@@ -5,12 +5,12 @@ import com.lcwd.electronicStore.service.UserService;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Getter
@@ -39,11 +39,16 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
     private List<Order> orders=new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    private Set<Role> roles=new HashSet<>();
+
 
     //must have implemented
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+
+        Set<SimpleGrantedAuthority> authorities = this.roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleName())).collect(Collectors.toSet());
+        return authorities;
     }
 
     @Override

@@ -2,9 +2,11 @@ package com.lcwd.electronicStore.service.impl;
 
 import com.lcwd.electronicStore.dtos.PageableResponse;
 import com.lcwd.electronicStore.dtos.UserDto;
+import com.lcwd.electronicStore.entity.Role;
 import com.lcwd.electronicStore.entity.User;
 import com.lcwd.electronicStore.exception.ResourceNotFoundException;
 import com.lcwd.electronicStore.helper.Helper;
+import com.lcwd.electronicStore.repository.RoleRepository;
 import com.lcwd.electronicStore.repository.UserRepository;
 import com.lcwd.electronicStore.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -24,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,6 +46,12 @@ public class UserServiceimpl implements UserService {
     @Value("${user.profile.image.path}")
     private String imagepath;
 
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Value("${normal.role.id}")
+    private String normal_role_id;
+
     private Logger logger= LoggerFactory.getLogger(UserServiceimpl.class);
 
     @Override
@@ -52,11 +61,15 @@ public class UserServiceimpl implements UserService {
         userDto.setUserId(userId);
         //password encoder
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-
         User user= dtoToentity(userDto);
+        //fetch user
+        if (user.getRoles() == null) {
+            user.setRoles(new HashSet<>());
+        }
+        Role role = roleRepository.findById(normal_role_id).get();
+        user.getRoles().add(role);
         User savedUser = userRepository.save(user);
         UserDto newdto= entityTodto(savedUser);
-
 
         return newdto;
     }
