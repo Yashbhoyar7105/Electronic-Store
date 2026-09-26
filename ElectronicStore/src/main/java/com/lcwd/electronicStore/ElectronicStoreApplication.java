@@ -34,8 +34,8 @@ public class ElectronicStoreApplication implements CommandLineRunner {
         System.out.println(passwordEncoder.encode("abcd"));
 
        try{
-           Role roleAdmin = Role.builder().roleId(admin_role_id).roleName("Role_Admin").build();
-           Role roleNormal = Role.builder().roleId(normal_role_id).roleName("Role_Normal").build();
+           Role roleAdmin = Role.builder().roleId(admin_role_id).roleName("ADMIN").build();
+           Role roleNormal = Role.builder().roleId(normal_role_id).roleName("NORMAL").build();
            repository.save(roleAdmin);
            repository.save(roleNormal);
 

@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -149,8 +150,13 @@ public class UserServiceimpl implements UserService {
         return dtoduser;
     }
 
+    @Override
+    public Optional<User> findUserByEmailOptional(String email) {
+        return userRepository.findByEmail(email);
+    }
 
-//user to dto
+
+    //user to dto
     private User dtoToentity(UserDto userDto) {
 //        User user = User.builder()
 //                .userId(userDto.getUserId())
