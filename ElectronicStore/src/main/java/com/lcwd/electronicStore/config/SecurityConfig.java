@@ -4,6 +4,7 @@ package com.lcwd.electronicStore.config;
 import com.lcwd.electronicStore.security.JwtAuthenticationEntryPoint;
 import com.lcwd.electronicStore.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,6 +24,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableMethodSecurity
@@ -77,13 +83,13 @@ public class SecurityConfig {
 //                         .logoutUrl("/do-logout")
 //                         );
 
-         http.csrf(csrf-> csrf .disable()).
-                 cors(cors->cors.disable())
+         http.csrf(csrf-> csrf .disable())
 
                  .authorizeHttpRequests(auth->auth
                          .requestMatchers("/auth/login").permitAll()
                          .requestMatchers(HttpMethod.POST,"/User").permitAll()
                          .requestMatchers(HttpMethod.DELETE,"/User/**").hasRole("ADMIN")
+                         .requestMatchers("/auth/google").permitAll()
                  .anyRequest()
                  .authenticated()
 
@@ -116,5 +122,31 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration builder){
          return builder.getAuthenticationManager();
+    }
+
+    @Bean
+    public FilterRegistrationBean corsFilter(){
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
+//        configuration.setAllowedOrigins(Arrays.asList("http://domain1.com","http://domain.com"));
+        configuration.addAllowedOriginPattern("*");
+        configuration.addAllowedHeader("Authorization");
+        configuration.addAllowedHeader("content-type");
+        configuration.addAllowedHeader("accept");
+        configuration.addAllowedMethod("GET");
+        configuration.addAllowedMethod("POST");
+        configuration.addAllowedMethod("PUT");
+        configuration.addAllowedMethod("DELETE");
+        configuration.addAllowedMethod("OPTIONS");
+        configuration.setMaxAge(3600L);
+
+
+        source.registerCorsConfiguration("/**",configuration);
+
+        FilterRegistrationBean filterRegistrationBean=new FilterRegistrationBean(new CorsFilter(source));
+        filterRegistrationBean.setOrder(-110);
+         return filterRegistrationBean;
     }
 }

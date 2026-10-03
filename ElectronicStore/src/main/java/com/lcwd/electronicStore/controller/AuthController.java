@@ -35,6 +35,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin("*")
 public class AuthController {
 
     @Autowired
@@ -119,7 +120,7 @@ public class AuthController {
         user = this.userService.findUserByEmailOptional(email).orElse(null);
 
         if(user==null){
-            user= this.saveUser(email,data.get("name").toString(),data.get("UrlPhoto").toString());
+            user= this.saveUser(email,data.get("name").toString(),data.get("photoUrl").toString());
         }
         ResponseEntity<JwtResponse> jwtResponse = this.login(JwtRequest.builder().email(user.getEmail()).password(newPassword).build());
 
